@@ -1,19 +1,15 @@
 # https://deeplearningcourses.com/c/data-science-deep-learning-in-theano-tensorflow
 # https://www.udemy.com/data-science-deep-learning-in-theano-tensorflow
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
-
-from keras.models import Sequential, Model
-from keras.layers import Dense, Activation, Lambda, Conv2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, Input
+from __future__ import division, print_function
 
 import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
+from keras.layers import Activation, BatchNormalization, Conv2D, Dense, Dropout, Flatten, Input, Lambda, MaxPooling2D
+from keras.models import Model
 
 from util import getCIFAR10
 
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 # get the data
 Xtrain, Ytrain, Xtest, Ytest = getCIFAR10()
@@ -21,9 +17,6 @@ Xtrain, Ytrain, Xtest, Ytest = getCIFAR10()
 # get shapes
 N, H, W, C = Xtrain.shape
 K = len(set(Ytrain))
-
-
-
 
 # make the CNN
 i = Input(shape=(H, W, C))
@@ -53,14 +46,13 @@ x = Activation('softmax')(x)
 
 model = Model(inputs=i, outputs=x)
 
-
 # list of losses: https://keras.io/losses/
 # list of optimizers: https://keras.io/optimizers/
 # list of metrics: https://keras.io/metrics/
 model.compile(
-  loss='sparse_categorical_crossentropy',
-  optimizer='adam',
-  metrics=['accuracy']
+    loss='sparse_categorical_crossentropy',
+    optimizer='adam',
+    metrics=[ 'accuracy' ]
 )
 
 # note: multiple ways to choose a backend
@@ -77,15 +69,13 @@ print("Returned:", r)
 print(r.history.keys())
 
 # plot some data
-plt.plot(r.history['loss'], label='loss')
-plt.plot(r.history['val_loss'], label='val_loss')
+plt.plot(r.history[ 'loss' ], label='loss')
+plt.plot(r.history[ 'val_loss' ], label='val_loss')
 plt.legend()
 plt.show()
 
 # accuracies
-plt.plot(r.history['acc'], label='acc')
-plt.plot(r.history['val_acc'], label='val_acc')
+plt.plot(r.history[ 'acc' ], label='acc')
+plt.plot(r.history[ 'val_acc' ], label='val_acc')
 plt.legend()
 plt.show()
-
-

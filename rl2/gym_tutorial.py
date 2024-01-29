@@ -1,6 +1,7 @@
 # https://deeplearningcourses.com/c/deep-reinforcement-learning-in-python
 # https://www.udemy.com/deep-reinforcement-learning-in-python
 import gym
+
 # Wiki:
 # https://github.com/openai/gym/wiki/CartPole-v0
 # Environment page:
@@ -45,11 +46,7 @@ action = env.action_space.sample()
 # do an action
 observation, reward, done, info = env.step(action)
 
-
 # run through an episode
 done = False
 while not done:
-  observation, reward, done, _ = env.step(env.action_space.sample())
-
-
-
+    observation, reward, done, _ = env.step(env.action_space.sample())

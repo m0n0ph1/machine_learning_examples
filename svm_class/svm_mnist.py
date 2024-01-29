@@ -1,13 +1,15 @@
 # https://deeplearningcourses.com/c/support-vector-machines-in-python
 # https://www.udemy.com/support-vector-machines-in-python
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
+from __future__ import division, print_function
+
+from datetime import datetime
 
 from sklearn.svm import SVC
+
 from util import getKaggleMNIST
-from datetime import datetime
+
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 # get the data: https://www.kaggle.com/c/digit-recognizer
 Xtrain, Ytrain, Xtest, Ytest = getKaggleMNIST()

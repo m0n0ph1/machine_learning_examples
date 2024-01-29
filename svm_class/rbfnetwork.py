@@ -1,20 +1,18 @@
 # https://deeplearningcourses.com/c/support-vector-machines-in-python
 # https://www.udemy.com/support-vector-machines-in-python
-from __future__ import print_function, division
-from builtins import range
+from __future__ import division, print_function
+
+from datetime import datetime
+
+from sklearn.kernel_approximation import Nystroem
+from sklearn.linear_model import SGDClassifier
+from sklearn.pipeline import FeatureUnion
+from sklearn.pipeline import Pipeline
+
+from util import getKaggleMNIST
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
-
-from sklearn.svm import SVC
-from util import getKaggleMNIST
-from datetime import datetime
-from sklearn.pipeline import Pipeline
-from sklearn.kernel_approximation import RBFSampler
-from sklearn.linear_model import SGDClassifier
-from sklearn.svm import LinearSVC
-from sklearn.pipeline import FeatureUnion
-from sklearn.preprocessing import StandardScaler
-from sklearn.kernel_approximation import Nystroem
 
 # get the data: https://www.kaggle.com/c/digit-recognizer
 Xtrain, Ytrain, Xtest, Ytest = getKaggleMNIST()
@@ -47,13 +45,12 @@ Xtrain, Ytrain, Xtest, Ytest = getKaggleMNIST()
 # multiple Nystroem
 n_components = 1000
 featurizer = FeatureUnion([
-  ("rbf0", Nystroem(gamma=0.05, n_components=n_components)),
-  ("rbf1", Nystroem(gamma=0.01, n_components=n_components)),
-  ("rbf2", Nystroem(gamma=0.005, n_components=n_components)),
-  ("rbf3", Nystroem(gamma=0.001, n_components=n_components)),
-  ])
-pipeline = Pipeline([('rbf', featurizer), ('linear', SGDClassifier(max_iter=1e6, tol=1e-5))])
-
+    ("rbf0", Nystroem(gamma=0.05, n_components=n_components)),
+    ("rbf1", Nystroem(gamma=0.01, n_components=n_components)),
+    ("rbf2", Nystroem(gamma=0.005, n_components=n_components)),
+    ("rbf3", Nystroem(gamma=0.001, n_components=n_components)),
+])
+pipeline = Pipeline([ ('rbf', featurizer), ('linear', SGDClassifier(max_iter=1e6, tol=1e-5)) ])
 
 t0 = datetime.now()
 pipeline.fit(Xtrain, Ytrain)

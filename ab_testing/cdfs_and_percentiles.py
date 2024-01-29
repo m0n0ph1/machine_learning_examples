@@ -1,11 +1,7 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from scipy.stats import norm
-
 
 mu = 170
 sd = 7
-
 
 # generate samples from our distribution
 x = norm.rvs(loc=mu, scale=sd, size=100)

@@ -1,26 +1,27 @@
-from __future__ import print_function, division
+from __future__ import division, print_function
+
 from builtins import range
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from process import get_data
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-from sklearn.utils import shuffle
-from process import get_data
 
 def y2indicator(y, K):
     N = len(y)
     ind = np.zeros((N, K))
     for i in range(N):
-        ind[i, y[i]] = 1
+        ind[ i, y[ i ] ] = 1
     return ind
 
 Xtrain, Ytrain, Xtest, Ytest = get_data()
-D = Xtrain.shape[1]
+D = Xtrain.shape[ 1 ]
 K = len(set(Ytrain) | set(Ytest))
-M = 5 # num hidden units
+M = 5  # num hidden units
 
 # convert to indicator
 Ytrain_ind = y2indicator(Ytrain, K)
@@ -51,24 +52,23 @@ def classification_rate(Y, P):
 def cross_entropy(Y, pY):
     return -np.sum(Y * np.log(pY)) / len(T)
 
-
 # train loop
-train_costs = []
-test_costs = []
+train_costs = [ ]
+test_costs = [ ]
 learning_rate = 0.001
 for i in range(10000):
     pYtrain, Ztrain = forward(Xtrain, W1, b1, W2, b2)
     pYtest, Ztest = forward(Xtest, W1, b1, W2, b2)
-
+    
     ctrain = cross_entropy(Ytrain_ind, pYtrain)
     ctest = cross_entropy(Ytest_ind, pYtest)
     train_costs.append(ctrain)
     test_costs.append(ctest)
-
+    
     # gradient descent
     gW2 = Ztrain.T.dot(pYtrain - Ytrain_ind)
     gb2 = (pYtrain - Ytrain_ind).sum(axis=0)
-    dZ  = (pYtrain - Ytrain_ind).dot(W2.T) * (1 - Ztrain * Ztrain)
+    dZ = (pYtrain - Ytrain_ind).dot(W2.T) * (1 - Ztrain * Ztrain)
     gW1 = Xtrain.T.dot(dZ)
     gb1 = dZ.sum(axis=0)
     W2 -= learning_rate * gW2

@@ -3,22 +3,21 @@
 # notes for this course can be found at:
 # https://deeplearningcourses.com/c/data-science-linear-regression-in-python
 # https://www.udemy.com/data-science-linear-regression-in-python
-from __future__ import print_function, division
-from builtins import range
+from __future__ import division, print_function
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-
 # load the data
-X = []
-Y = []
+X = [ ]
+Y = [ ]
 for line in open('data_poly.csv'):
     x, y = line.split(',')
     x = float(x)
-    X.append([1, x, x*x]) # add the bias term x0 = 1
+    X.append([ 1, x, x * x ])  # add the bias term x0 = 1
     # our model is therefore y_hat = w0 + w1 * x + w2 * x**2
     Y.append(float(y))
 
@@ -27,10 +26,9 @@ X = np.array(X)
 Y = np.array(Y)
 
 # let's plot the data to see what it looks like
-plt.scatter(X[:,1], Y)
+plt.scatter(X[ :, 1 ], Y)
 plt.title("The data we're trying to fit")
 plt.show()
-
 
 # apply the equations we learned to calculate a and b
 # numpy has a special method for solving Ax = b
@@ -39,18 +37,16 @@ plt.show()
 #       np.dot() does what we expect for matrix multiplication
 w = np.linalg.solve(np.dot(X.T, X), np.dot(X.T, Y))
 
-
 # let's plot everything together to make sure it worked
-plt.scatter(X[:,1], Y)
+plt.scatter(X[ :, 1 ], Y)
 
 # to plot our quadratic model predictions, let's
 # create a line of x's and calculate the predicted y's
-x_line = np.linspace(X[:,1].min(), X[:,1].max())
-y_line = w[0] + w[1] * x_line + w[2] * x_line * x_line
+x_line = np.linspace(X[ :, 1 ].min(), X[ :, 1 ].max())
+y_line = w[ 0 ] + w[ 1 ] * x_line + w[ 2 ] * x_line * x_line
 plt.plot(x_line, y_line)
 plt.title("Our fitted quadratic")
 plt.show()
-
 
 # determine how good the model is by computing the r-squared
 Yhat = X.dot(w)

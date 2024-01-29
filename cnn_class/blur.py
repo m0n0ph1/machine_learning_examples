@@ -1,14 +1,16 @@
 # https://deeplearningcourses.com/c/deep-learning-convolutional-neural-networks-theano-tensorflow
 # https://udemy.com/deep-learning-convolutional-neural-networks-theano-tensorflow
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
+from __future__ import division, print_function
 
+from builtins import range
+
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import convolve2d
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 # load the famous Lena image
 img = mpimg.imread('lena.png')
@@ -26,9 +28,9 @@ plt.show()
 W = np.zeros((20, 20))
 for i in range(20):
     for j in range(20):
-        dist = (i - 9.5)**2 + (j - 9.5)**2
-        W[i, j] = np.exp(-dist / 50.)
-W /= W.sum() # normalize the kernel
+        dist = (i - 9.5) ** 2 + (j - 9.5) ** 2
+        W[ i, j ] = np.exp(-dist / 50.)
+W /= W.sum()  # normalize the kernel
 
 # let's see what the filter looks like
 plt.imshow(W, cmap='gray')
@@ -50,13 +52,11 @@ plt.imshow(out, cmap='gray')
 plt.show()
 print(out.shape)
 
-
 # in color
 out3 = np.zeros(img.shape)
 print(out3.shape)
 for i in range(3):
-    out3[:,:,i] = convolve2d(img[:,:,i], W, mode='same')
+    out3[ :, :, i ] = convolve2d(img[ :, :, i ], W, mode='same')
 # out3 /= out3.max() # can also do this if you didn't normalize the kernel
 plt.imshow(out3)
-plt.show() # does not look like anything
-
+plt.show()  # does not look like anything

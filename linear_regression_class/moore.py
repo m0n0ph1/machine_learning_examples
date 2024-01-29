@@ -5,18 +5,18 @@
 # https://www.udemy.com/data-science-linear-regression-in-python
 # transistor count from: https://en.wikipedia.org/wiki/Transistor_count
 
-from __future__ import print_function, division
-from builtins import range
+from __future__ import division, print_function
+
+import re
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-
-import re
-import numpy as np
-import matplotlib.pyplot as plt
-
-X = []
-Y = []
+X = [ ]
+Y = [ ]
 
 # some numbers show up as 1,170,000,000 (commas)
 # some numbers have references in square brackets after them
@@ -24,12 +24,11 @@ non_decimal = re.compile(r'[^\d]+')
 
 for line in open('moore.csv'):
     r = line.split('\t')
-
-    x = int(non_decimal.sub('', r[2].split('[')[0]))
-    y = int(non_decimal.sub('', r[1].split('[')[0]))
+    
+    x = int(non_decimal.sub('', r[ 2 ].split('[')[ 0 ]))
+    y = int(non_decimal.sub('', r[ 1 ].split('[')[ 0 ]))
     X.append(x)
     Y.append(y)
-
 
 X = np.array(X)
 Y = np.array(Y)
@@ -43,11 +42,11 @@ plt.show()
 
 # copied from lr_1d.py
 denominator = X.dot(X) - X.mean() * X.sum()
-a = ( X.dot(Y) - Y.mean()*X.sum() ) / denominator
-b = ( Y.mean() * X.dot(X) - X.mean() * X.dot(Y) ) / denominator
+a = (X.dot(Y) - Y.mean() * X.sum()) / denominator
+b = (Y.mean() * X.dot(X) - X.mean() * X.dot(Y)) / denominator
 
 # let's calculate the predicted Y
-Yhat = a*X + b
+Yhat = a * X + b
 
 plt.scatter(X, Y)
 plt.plot(X, Yhat)
@@ -66,4 +65,4 @@ print("the r-squared is:", r2)
 # 2*transistorcount = 2 * exp(b) * exp(a*year) = exp(ln(2)) * exp(b) * exp(a * year) = exp(b) * exp(a * year + ln(2))
 # a*year2 = a*year1 + ln2
 # year2 = year1 + ln2/a
-print("time to double:", np.log(2)/a, "years")
+print("time to double:", np.log(2) / a, "years")

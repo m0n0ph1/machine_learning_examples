@@ -1,17 +1,17 @@
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
-
+from __future__ import division, print_function
 
 import numpy as np
+
 from process import get_data
+
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 X, Y, _, _ = get_data()
 
 # randomly initialize weights
 M = 5
-D = X.shape[1]
+D = X.shape[ 1 ]
 K = len(set(Y))
 W1 = np.random.randn(D, M)
 b1 = np.zeros(M)

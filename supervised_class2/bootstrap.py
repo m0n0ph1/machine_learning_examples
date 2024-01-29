@@ -1,14 +1,15 @@
 # https://deeplearningcourses.com/c/machine-learning-in-python-random-forest-adaboost
 # https://www.udemy.com/machine-learning-in-python-random-forest-adaboost
-from __future__ import print_function, division
-from builtins import range, input
+from __future__ import division, print_function
+
+from builtins import range
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import norm
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
-
-
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import norm, t
 
 B = 200
 N = 20
@@ -18,18 +19,17 @@ print("sample mean of X:", X.mean())
 
 individual_estimates = np.empty(B)
 for b in range(B):
-  sample = np.random.choice(X, size=N)
-  individual_estimates[b] = sample.mean()
-
+    sample = np.random.choice(X, size=N)
+    individual_estimates[ b ] = sample.mean()
 
 bmean = individual_estimates.mean()
 bstd = individual_estimates.std()
-lower = bmean + norm.ppf(0.025)*bstd # norm.ppf(0.025) == -1.96
-upper = bmean + norm.ppf(0.975)*bstd # norm.ppf(0.975) == +1.96
+lower = bmean + norm.ppf(0.025) * bstd  # norm.ppf(0.025) == -1.96
+upper = bmean + norm.ppf(0.975) * bstd  # norm.ppf(0.975) == +1.96
 
 # traditional way of calculating CI
-lower2 = X.mean() + norm.ppf(0.025)*X.std()/np.sqrt(N)
-upper2 = X.mean() + norm.ppf(0.975)*X.std()/np.sqrt(N)
+lower2 = X.mean() + norm.ppf(0.025) * X.std() / np.sqrt(N)
+upper2 = X.mean() + norm.ppf(0.975) * X.std() / np.sqrt(N)
 
 print("bootstrap mean of X:", bmean)
 

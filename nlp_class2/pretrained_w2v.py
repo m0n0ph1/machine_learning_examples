@@ -2,15 +2,12 @@
 # https://www.udemy.com/data-science-natural-language-processing-in-python
 
 # Author: http://lazyprogrammer.me
-from __future__ import print_function, division
-from future.utils import iteritems
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
-
+from __future__ import division, print_function
 
 from gensim.models import KeyedVectors
 
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 # warning: takes quite awhile
 # https://code.google.com/archive/p/word2vec/
@@ -18,10 +15,9 @@ from gensim.models import KeyedVectors
 # 3 million words and phrases
 # D = 300
 word_vectors = KeyedVectors.load_word2vec_format(
-  '../large_files/GoogleNews-vectors-negative300.bin',
-  binary=True
+    '../large_files/GoogleNews-vectors-negative300.bin',
+    binary=True
 )
-
 
 # convenience
 # result looks like:
@@ -36,15 +32,14 @@ word_vectors = KeyedVectors.load_word2vec_format(
 #  ('pablo', 0.5631559491157532),
 #  ('malta', 0.5620371103286743)]
 def find_analogies(w1, w2, w3):
-  r = word_vectors.most_similar(positive=[w1, w3], negative=[w2])
-  print("%s - %s = %s - %s" % (w1, w2, r[0][0], w3))
+    r = word_vectors.most_similar(positive=[ w1, w3 ], negative=[ w2 ])
+    print("%s - %s = %s - %s" % (w1, w2, r[ 0 ][ 0 ], w3))
 
 def nearest_neighbors(w):
-  r = word_vectors.most_similar(positive=[w])
-  print("neighbors of: %s" % w)
-  for word, score in r:
-    print("\t%s" % word)
-
+    r = word_vectors.most_similar(positive=[ w ])
+    print("neighbors of: %s" % w)
+    for word, score in r:
+        print("\t%s" % word)
 
 find_analogies('king', 'man', 'woman')
 find_analogies('france', 'paris', 'london')

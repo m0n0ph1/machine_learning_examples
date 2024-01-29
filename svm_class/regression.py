@@ -1,25 +1,23 @@
 # https://deeplearningcourses.com/c/support-vector-machines-in-python
 # https://www.udemy.com/support-vector-machines-in-python
-from __future__ import print_function, division
+from __future__ import division, print_function
+
 from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
 
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-
-from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
 
+# Note: you may need to update your version of future
+# sudo pip install -U future
+
 # get the data: https://archive.ics.uci.edu/ml/datasets/Concrete+Compressive+Strength
 df = pd.read_excel('../large_files/Concrete_Data.xls')
-df.columns = list(range(df.shape[1]))
+df.columns = list(range(df.shape[ 1 ]))
 
-X = df[[0,1,2,3,4,5,6,7]].values
-Y = df[8].values
+X = df[ [ 0, 1, 2, 3, 4, 5, 6, 7 ] ].values
+Y = df[ 8 ].values
 
 # split the data into train and test sets
 # this lets us simulate how our model will perform in the future

@@ -15,44 +15,49 @@ from pulp import *
 
 
 prob = LpProblem("best_fit_line", LpMinimize)
-z = LpVariable('z',0)
-a = LpVariable('a',0)
+z = LpVariable('z', 0)
+a = LpVariable('a', 0)
 # b = LpVariable('b')
-c = LpVariable('c',0)
+c = LpVariable('c', 0)
 
 # objective function
 prob += z
 
 points = [
-    (1,3),
-    (2,5),
-    (3,7),
-    (5,11),
-    (7,14),
-    (8,15),
-    (10,19),
+    (1, 3),
+    (2, 5),
+    (3, 7),
+    (5, 11),
+    (7, 14),
+    (8, 15),
+    (10, 19),
 ]
 
 prob += (a != 0)
-for x,y in points:
-    prob += (a*x - y - c <= z)
-    prob += (a*x - y - c >= -z)
+for x, y in points:
+    prob += (a * x - y - c <= z)
+    prob += (a * x - y - c >= -z)
 
-status = prob.solve(GLPK(msg = 0))
-print "status:", LpStatus[status]
-print "values:"
-print "\ta:", value(a)
+status = prob.solve(GLPK(msg=0))
+print
+"status:", LpStatus[ status ]
+print
+"values:"
+print
+"\ta:", value(a)
 # print "\tb:", value(b)
-print "\tc:", value(c)
-print "\tz:", value(z)
-
+print
+"\tc:", value(c)
+print
+"\tz:", value(z)
 
 # extra part to plot everything
 import numpy as np
 import matplotlib.pyplot as plt
+
 data = np.array(points)
-plt.scatter(data[:,0], data[:,1])
+plt.scatter(data[ :, 0 ], data[ :, 1 ])
 x = np.linspace(0, 11, 100)
-y = value(a)*x - value(c)
+y = value(a) * x - value(c)
 plt.plot(x, y)
 plt.show()

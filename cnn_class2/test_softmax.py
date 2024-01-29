@@ -1,21 +1,22 @@
 # https://deeplearningcourses.com/c/advanced-computer-vision
 # https://www.udemy.com/advanced-computer-vision
-from __future__ import print_function, division
-from builtins import range, input
+from __future__ import division, print_function
+
+import keras
+import keras.backend as K
+import numpy as np
+
+import tensorflow as tf
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-import tensorflow as tf
-import numpy as np
-import keras
-import keras.backend as K
 
 def custom_softmax(x):
-  m = tf.reduce_max(x, 1)
-  x = x - m
-  e = tf.exp(x)
-  return e / tf.reduce_sum(e, -1)
-
+    m = tf.reduce_max(x, 1)
+    x = x - m
+    e = tf.exp(x)
+    return e / tf.reduce_sum(e, -1)
 
 a = np.random.randn(1, 1000)
 

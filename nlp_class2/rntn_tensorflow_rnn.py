@@ -1,26 +1,25 @@
 # Course URL:
 # https://deeplearningcourses.com/c/natural-language-processing-with-deep-learning-in-python
 # https://udemy.com/natural-language-processing-with-deep-learning-in-python
-from __future__ import print_function, division
+from __future__ import division, print_function
+
+import sys
 from builtins import range
+from datetime import datetime
+
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.metrics import f1_score
+from sklearn.utils import shuffle
+
+import tensorflow as tf
+from util import get_ptb_data, init_weight
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-
-import sys
-import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
-
-from sklearn.utils import shuffle
-from util import init_weight, get_ptb_data, display_tree
-from datetime import datetime
-from sklearn.metrics import f1_score
-
 if tf.__version__.startswith('2'):
     tf.compat.v1.disable_eager_execution()
-
-
 
 class RecursiveNN:
     def __init__(self, V, D, K, activation=tf.tanh):
@@ -28,23 +27,23 @@ class RecursiveNN:
         self.D = D
         self.K = K
         self.f = activation
-
+    
     def fit(self, trees, test_trees, reg=1e-3, epochs=8, train_inner_nodes=False):
         D = self.D
         V = self.V
         K = self.K
         N = len(trees)
-
+        
         We = init_weight(V, D)
-        W11 = np.random.randn(D, D, D) / np.sqrt(3*D)
-        W22 = np.random.randn(D, D, D) / np.sqrt(3*D)
-        W12 = np.random.randn(D, D, D) / np.sqrt(3*D)
+        W11 = np.random.randn(D, D, D) / np.sqrt(3 * D)
+        W22 = np.random.randn(D, D, D) / np.sqrt(3 * D)
+        W12 = np.random.randn(D, D, D) / np.sqrt(3 * D)
         W1 = init_weight(D, D)
         W2 = init_weight(D, D)
         bh = np.zeros(D)
         Wo = init_weight(D, K)
         bo = np.zeros(K)
-
+        
         self.We = tf.Variable(We.astype(np.float32))
         self.W11 = tf.Variable(W11.astype(np.float32))
         self.W22 = tf.Variable(W22.astype(np.float32))
@@ -54,29 +53,28 @@ class RecursiveNN:
         self.bh = tf.Variable(bh.astype(np.float32))
         self.Wo = tf.Variable(Wo.astype(np.float32))
         self.bo = tf.Variable(bo.astype(np.float32))
-        self.weights = [self.We, self.W11, self.W22, self.W12, self.W1, self.W2, self.Wo]
-
-
+        self.weights = [ self.We, self.W11, self.W22, self.W12, self.W1, self.W2, self.Wo ]
+        
         words = tf.compat.v1.placeholder(tf.int32, shape=(None,), name='words')
         left_children = tf.compat.v1.placeholder(tf.int32, shape=(None,), name='left_children')
         right_children = tf.compat.v1.placeholder(tf.int32, shape=(None,), name='right_children')
         labels = tf.compat.v1.placeholder(tf.int32, shape=(None,), name='labels')
-
+        
         # save for later
         self.words = words
         self.left = left_children
         self.right = right_children
         self.labels = labels
-
+        
         def dot1(a, B):
-            return tf.tensordot(a, B, axes=[[0], [1]])
-
+            return tf.tensordot(a, B, axes=[ [ 0 ], [ 1 ] ])
+        
         def dot2(B, a):
-            return tf.tensordot(B, a, axes=[[1], [0]])
-
+            return tf.tensordot(B, a, axes=[ [ 1 ], [ 0 ] ])
+        
         def recursive_net_transform(hiddens, n):
-            h_left = hiddens.read(left_children[n])
-            h_right = hiddens.read(right_children[n])
+            h_left = hiddens.read(left_children[ n ])
+            h_right = hiddens.read(right_children[ n ])
             return self.f(
                 dot1(h_left, dot2(self.W11, h_left)) +
                 dot1(h_right, dot2(self.W22, h_right)) +
@@ -85,12 +83,11 @@ class RecursiveNN:
                 dot1(h_right, self.W2) +
                 self.bh
             )
-
-
+        
         def recurrence(hiddens, n):
-            w = words[n]
+            w = words[ n ]
             # any non-word will have index -1
-
+            
             h_n = tf.cond(
                 pred=w >= 0,
                 true_fn=lambda: tf.nn.embedding_lookup(params=self.We, ids=w),
@@ -99,13 +96,11 @@ class RecursiveNN:
             hiddens = hiddens.write(n, h_n)
             n = tf.add(n, 1)
             return hiddens, n
-
-
+        
         def condition(hiddens, n):
             # loop should continue while n < len(words)
-            return tf.less(n, tf.shape(input=words)[0])
-
-
+            return tf.less(n, tf.shape(input=words)[ 0 ])
+        
         hiddens = tf.TensorArray(
             tf.float32,
             size=0,
@@ -113,24 +108,24 @@ class RecursiveNN:
             clear_after_read=False,
             infer_shape=False
         )
-
+        
         hiddens, _ = tf.while_loop(
             cond=condition,
             body=recurrence,
-            loop_vars=[hiddens, tf.constant(0)],
+            loop_vars=[ hiddens, tf.constant(0) ],
             parallel_iterations=1
         )
         h = hiddens.stack()
         logits = tf.matmul(h, self.Wo) + self.bo
-
+        
         prediction_op = tf.argmax(input=logits, axis=1)
         self.prediction_op = prediction_op
         
-        rcost = reg*sum(tf.nn.l2_loss(p) for p in self.weights)
+        rcost = reg * sum(tf.nn.l2_loss(p) for p in self.weights)
         if train_inner_nodes:
             # filter out -1s
             labeled_indices = tf.compat.v1.where(labels >= 0)
-
+            
             cost_op = tf.reduce_mean(
                 input_tensor=tf.nn.sparse_softmax_cross_entropy_with_logits(
                     logits=tf.gather(logits, labeled_indices),
@@ -140,23 +135,22 @@ class RecursiveNN:
         else:
             cost_op = tf.reduce_mean(
                 input_tensor=tf.nn.sparse_softmax_cross_entropy_with_logits(
-                    logits=logits[-1],
-                    labels=labels[-1],
+                    logits=logits[ -1 ],
+                    labels=labels[ -1 ],
                 )
             ) + rcost
-
+        
         train_op = tf.compat.v1.train.AdagradOptimizer(learning_rate=8e-3).minimize(cost_op)
         # train_op = tf.train.MomentumOptimizer(learning_rate=8e-3, momentum=0.9).minimize(cost_op)
-
+        
         # NOTE: If you're using GPU, InteractiveSession breaks
         # AdagradOptimizer and some other optimizers
         # change to tf.Session() if so.
         self.session = tf.compat.v1.Session()
         init_op = tf.compat.v1.global_variables_initializer()
         self.session.run(init_op)
-
-
-        costs = []
+        
+        costs = [ ]
         sequence_indexes = range(N)
         for i in range(epochs):
             t0 = datetime.now()
@@ -166,7 +160,7 @@ class RecursiveNN:
             cost = 0
             it = 0
             for j in sequence_indexes:
-                words_, left, right, lab = trees[j]
+                words_, left, right, lab = trees[ j ]
                 # print("words_:", words_)
                 # print("lab:", lab)
                 c, p, _ = self.session.run(
@@ -185,18 +179,17 @@ class RecursiveNN:
                         print(p.get_value().sum())
                     exit()
                 cost += c
-                n_correct += (p[-1] == lab[-1])
+                n_correct += (p[ -1 ] == lab[ -1 ])
                 n_total += 1
-
+                
                 it += 1
                 if it % 10 == 0:
                     sys.stdout.write(
                         "j/N: %d/%d correct rate so far: %f, cost so far: %f\r" %
-                        (it, N, float(n_correct)/n_total, cost)
+                        (it, N, float(n_correct) / n_total, cost)
                     )
                     sys.stdout.flush()
-
-
+            
             # calculate the test score
             n_test_correct = 0
             n_test_total = 0
@@ -207,21 +200,20 @@ class RecursiveNN:
                     right_children: right,
                     labels: lab
                 })
-                n_test_correct += (p[-1] == lab[-1])
+                n_test_correct += (p[ -1 ] == lab[ -1 ])
                 n_test_total += 1
-
-
+            
             print(
                 "i:", i, "cost:", cost,
-                "train acc:", float(n_correct)/n_total,
-                "test acc:", float(n_test_correct)/n_test_total,
+                "train acc:", float(n_correct) / n_total,
+                "test acc:", float(n_test_correct) / n_test_total,
                 "time for epoch:", (datetime.now() - t0)
             )
             costs.append(cost)
-
+        
         plt.plot(costs)
         plt.show()
-
+    
     def predict(self, words, left, right, lab):
         return self.session.run(
             self.prediction_op,
@@ -232,25 +224,23 @@ class RecursiveNN:
                 self.labels: lab
             }
         )
-
-
+    
     def score(self, trees):
         n_total = len(trees)
         n_correct = 0
         for words, left, right, lab in trees:
             p = self.predict(words, left, right, lab)
-            n_correct += (p[-1] == lab[-1])
+            n_correct += (p[ -1 ] == lab[ -1 ])
         return float(n_correct) / n_total
-
+    
     def f1_score(self, trees):
-        Y = []
-        P = []
+        Y = [ ]
+        P = [ ]
         for words, left, right, lab in trees:
             p = self.predict(words, left, right, lab)
-            Y.append(lab[-1])
-            P.append(p[-1])
+            Y.append(lab[ -1 ])
+            P.append(p[ -1 ])
         return f1_score(Y, P, average=None).mean()
-
 
 def add_idx_to_tree(tree, current_idx):
     # post-order labeling of tree nodes
@@ -262,14 +252,13 @@ def add_idx_to_tree(tree, current_idx):
     current_idx += 1
     return current_idx
 
-
 def tree2list(tree, parent_idx, is_binary=False):
     if tree is None:
-        return [], [], [], []
-
+        return [ ], [ ], [ ], [ ]
+    
     words_left, left_child_left, right_child_left, labels_left = tree2list(tree.left, tree.idx, is_binary)
     words_right, left_child_right, right_child_right, labels_right = tree2list(tree.right, tree.idx, is_binary)
-
+    
     if tree.word is None:
         w = -1
         left = tree.left.idx
@@ -278,63 +267,59 @@ def tree2list(tree, parent_idx, is_binary=False):
         w = tree.word
         left = -1
         right = -1
-
-    words = words_left + words_right + [w]
-    left_child = left_child_left + left_child_right + [left]
-    right_child = right_child_left + right_child_right + [right]
-
+    
+    words = words_left + words_right + [ w ]
+    left_child = left_child_left + left_child_right + [ left ]
+    right_child = right_child_left + right_child_right + [ right ]
+    
     if is_binary:
         if tree.label > 2:
             label = 1
         elif tree.label < 2:
             label = 0
         else:
-            label = -1 # we will eventually filter these out
+            label = -1  # we will eventually filter these out
     else:
         label = tree.label
-    labels = labels_left + labels_right + [label]
-
+    labels = labels_left + labels_right + [ label ]
+    
     return words, left_child, right_child, labels
-
 
 def main(is_binary=True):
     train, test, word2idx = get_ptb_data()
-
+    
     for t in train:
         add_idx_to_tree(t, 0)
-    train = [tree2list(t, -1, is_binary) for t in train]
+    train = [ tree2list(t, -1, is_binary) for t in train ]
     if is_binary:
-        train = [t for t in train if t[3][-1] >= 0] # for filtering binary labels
-
+        train = [ t for t in train if t[ 3 ][ -1 ] >= 0 ]  # for filtering binary labels
+    
     for t in test:
         add_idx_to_tree(t, 0)
-    test = [tree2list(t, -1, is_binary) for t in test]
+    test = [ tree2list(t, -1, is_binary) for t in test ]
     if is_binary:
-        test = [t for t in test if t[3][-1] >= 0] # for filtering binary labels
-
-
-
+        test = [ t for t in test if t[ 3 ][ -1 ] >= 0 ]  # for filtering binary labels
+    
     train = shuffle(train)
     # train = train[:5000]
     # n_pos = sum(t[3][-1] for t in train)
     # print("n_pos train:", n_pos)
     test = shuffle(test)
-    smalltest = test[:1000]
+    smalltest = test[ :1000 ]
     # n_pos = sum(t[3][-1] for t in test)
     # print("n_pos test:", n_pos)
-
+    
     V = len(word2idx)
     print("vocab size:", V)
     D = 10
     K = 2 if is_binary else 5
-
+    
     model = RecursiveNN(V, D, K)
     model.fit(train, smalltest, reg=1e-3, epochs=20, train_inner_nodes=True)
     print("train accuracy:", model.score(train))
     print("test accuracy:", model.score(test))
     print("train f1:", model.f1_score(train))
     print("test f1:", model.f1_score(test))
-
 
 if __name__ == '__main__':
     main()

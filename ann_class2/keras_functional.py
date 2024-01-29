@@ -1,15 +1,15 @@
 # https://deeplearningcourses.com/c/data-science-deep-learning-in-theano-tensorflow
 # https://www.udemy.com/data-science-deep-learning-in-theano-tensorflow
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
-
-from keras.models import Model
-from keras.layers import Dense, Input
-from util import get_normalized_data, y2indicator
+from __future__ import division, print_function
 
 import matplotlib.pyplot as plt
+from keras.layers import Dense, Input
+from keras.models import Model
+
+from util import get_normalized_data, y2indicator
+
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 # NOTE: do NOT name your file keras.py because it will conflict
 # with importing keras
@@ -32,7 +32,6 @@ K = len(set(Ytrain))
 Ytrain = y2indicator(Ytrain)
 Ytest = y2indicator(Ytest)
 
-
 # ANN with layers [784] -> [500] -> [300] -> [10]
 i = Input(shape=(D,))
 x = Dense(500, activation='relu')(i)
@@ -40,14 +39,13 @@ x = Dense(300, activation='relu')(x)
 x = Dense(K, activation='softmax')(x)
 model = Model(inputs=i, outputs=x)
 
-
 # list of losses: https://keras.io/losses/
 # list of optimizers: https://keras.io/optimizers/
 # list of metrics: https://keras.io/metrics/
 model.compile(
-  loss='categorical_crossentropy',
-  optimizer='adam',
-  metrics=['accuracy']
+    loss='categorical_crossentropy',
+    optimizer='adam',
+    metrics=[ 'accuracy' ]
 )
 
 # note: multiple ways to choose a backend
@@ -64,15 +62,13 @@ print("Returned:", r)
 print(r.history.keys())
 
 # plot some data
-plt.plot(r.history['loss'], label='loss')
-plt.plot(r.history['val_loss'], label='val_loss')
+plt.plot(r.history[ 'loss' ], label='loss')
+plt.plot(r.history[ 'val_loss' ], label='val_loss')
 plt.legend()
 plt.show()
 
 # accuracies
-plt.plot(r.history['accuracy'], label='acc')
-plt.plot(r.history['val_accuracy'], label='val_acc')
+plt.plot(r.history[ 'accuracy' ], label='acc')
+plt.plot(r.history[ 'val_accuracy' ], label='val_acc')
 plt.legend()
 plt.show()
-
-

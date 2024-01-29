@@ -1,22 +1,21 @@
 # From the course: Bayesin Machine Learning in Python: A/B Testing
 # https://deeplearningcourses.com/c/bayesian-machine-learning-in-python-ab-testing
 # https://www.udemy.com/bayesian-machine-learning-in-python-ab-testing
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
-
+from __future__ import division, print_function
 
 import numpy as np
 import pandas as pd
 from scipy import stats
 
+# Note: you may need to update your version of future
+# sudo pip install -U future
+
 # get data
 df = pd.read_csv('advertisement_clicks.csv')
-a = df[df['advertisement_id'] == 'A']
-b = df[df['advertisement_id'] == 'B']
-a = a['action']
-b = b['action']
+a = df[ df[ 'advertisement_id' ] == 'A' ]
+b = df[ df[ 'advertisement_id' ] == 'B' ]
+a = a[ 'action' ]
+b = b[ 'action' ]
 
 print("a.mean:", a.mean())
 print("b.mean:", b.mean())
@@ -39,7 +38,7 @@ t = (a.mean() - b.mean()) / np.sqrt(s1_sq / N1 + s2_sq / N2)
 
 nu1 = N1 - 1
 nu2 = N2 - 1
-df = (s1_sq / N1 + s2_sq / N2)**2 / ( (s1_sq*s1_sq) / (N1*N1 * nu1) + (s2_sq*s2_sq) / (N2*N2 * nu2) )
-p = (1 - stats.t.cdf(np.abs(t), df=df))*2
+df = (s1_sq / N1 + s2_sq / N2) ** 2 / ((s1_sq * s1_sq) / (N1 * N1 * nu1) + (s2_sq * s2_sq) / (N2 * N2 * nu2))
+p = (1 - stats.t.cdf(np.abs(t), df=df)) * 2
 print("Manual Welch t-test")
 print("t:\t", t, "p:\t", p)

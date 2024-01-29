@@ -1,10 +1,10 @@
 # https://deeplearningcourses.com/c/cutting-edge-artificial-intelligence
-import numpy as np
 from collections import deque
-import gym
-from gym import spaces
-import cv2  # opencv-python
 
+import cv2  # opencv-python
+import gym
+import numpy as np
+from gym import spaces
 
 class NoopResetEnv(gym.Wrapper):
     def __init__(self, env, noop_max=30):
@@ -15,8 +15,8 @@ class NoopResetEnv(gym.Wrapper):
         self.noop_max = noop_max
         self.override_num_noops = None
         self.noop_action = 0
-        assert env.unwrapped.get_action_meanings()[0] == 'NOOP'
-
+        assert env.unwrapped.get_action_meanings()[ 0 ] == 'NOOP'
+    
     def reset(self, **kwargs):
         """ Do no-op action for a number of steps in [1, noop_max]."""
         self.env.reset(**kwargs)
@@ -31,18 +31,17 @@ class NoopResetEnv(gym.Wrapper):
             if done:
                 obs = self.env.reset(**kwargs)
         return obs
-
+    
     def step(self, ac):
         return self.env.step(ac)
-
 
 class FireResetEnv(gym.Wrapper):
     def __init__(self, env):
         """Take action on reset for environments that are fixed until firing."""
         gym.Wrapper.__init__(self, env)
-        assert env.unwrapped.get_action_meanings()[1] == 'FIRE'
+        assert env.unwrapped.get_action_meanings()[ 1 ] == 'FIRE'
         assert len(env.unwrapped.get_action_meanings()) >= 3
-
+    
     def reset(self, **kwargs):
         self.env.reset(**kwargs)
         obs, _, done, _ = self.env.step(1)
@@ -52,10 +51,9 @@ class FireResetEnv(gym.Wrapper):
         if done:
             self.env.reset(**kwargs)
         return obs
-
+    
     def step(self, ac):
         return self.env.step(ac)
-
 
 class EpisodicLifeEnv(gym.Wrapper):
     def __init__(self, env):
@@ -65,7 +63,7 @@ class EpisodicLifeEnv(gym.Wrapper):
         gym.Wrapper.__init__(self, env)
         self.lives = 0
         self.was_real_done = True
-
+    
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
         self.was_real_done = done
@@ -79,7 +77,7 @@ class EpisodicLifeEnv(gym.Wrapper):
             done = True
         self.lives = lives
         return obs, reward, done, info
-
+    
     def reset(self, **kwargs):
         """Reset only when lives are exhausted.
         This way all states are still reachable even though lives are episodic,
@@ -93,7 +91,6 @@ class EpisodicLifeEnv(gym.Wrapper):
         self.lives = self.env.unwrapped.ale.lives()
         return obs
 
-
 class MaxAndSkipEnv(gym.Wrapper):
     def __init__(self, env, skip=4):
         """Return only every `skip`-th frame"""
@@ -101,7 +98,7 @@ class MaxAndSkipEnv(gym.Wrapper):
         # most recent raw observations (for max pooling across time steps)
         self._obs_buffer = np.zeros((2,) + env.observation_space.shape, dtype='uint8')
         self._skip = skip
-
+    
     def step(self, action):
         """Repeat action, sum reward, and max over last observations."""
         total_reward = 0.0
@@ -109,27 +106,25 @@ class MaxAndSkipEnv(gym.Wrapper):
         for i in range(self._skip):
             obs, reward, done, info = self.env.step(action)
             if i == self._skip - 2:
-                self._obs_buffer[0] = obs
+                self._obs_buffer[ 0 ] = obs
             if i == self._skip - 1:
-                self._obs_buffer[1] = obs
+                self._obs_buffer[ 1 ] = obs
             total_reward += reward
             if done:
                 break
         # Note that the observation on the done=True frame
         # doesn't matter
         max_frame = self._obs_buffer.max(axis=0)
-
+        
         return max_frame, total_reward, done, info
-
+    
     def reset(self, **kwargs):
         return self.env.reset(**kwargs)
-
 
 class ClipRewardEnv(gym.RewardWrapper):
     def reward(self, reward):
         """Bin reward to {+1, 0, -1} by its sign."""
         return np.sign(reward)
-
 
 # class WarpFrame(gym.ObservationWrapper):
 #     def __init__(self, env):
@@ -152,11 +147,11 @@ class WarpFrame(gym.ObservationWrapper):
         self.grayscale = grayscale
         if self.grayscale:
             self.observation_space = spaces.Box(low=0, high=255,
-                shape=(self.height, self.width, 1), dtype=np.uint8)
+                                                shape=(self.height, self.width, 1), dtype=np.uint8)
         else:
             self.observation_space = spaces.Box(low=0, high=255,
-                shape=(self.height, self.width, 3), dtype=np.uint8)
-
+                                                shape=(self.height, self.width, 3), dtype=np.uint8)
+    
     def observation(self, frame):
         if self.grayscale:
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
@@ -164,7 +159,6 @@ class WarpFrame(gym.ObservationWrapper):
         if self.grayscale:
             frame = np.expand_dims(frame, -1)
         return frame
-
 
 class FrameStack(gym.Wrapper):
     def __init__(self, env, k):
@@ -178,25 +172,24 @@ class FrameStack(gym.Wrapper):
         """
         gym.Wrapper.__init__(self, env)
         self.k = k
-        self.frames = deque([], maxlen=k)
+        self.frames = deque([ ], maxlen=k)
         shp = env.observation_space.shape
-        self.observation_space = spaces.Box(low=0, high=255, shape=(shp[0], shp[1], shp[2] * k))
-
+        self.observation_space = spaces.Box(low=0, high=255, shape=(shp[ 0 ], shp[ 1 ], shp[ 2 ] * k))
+    
     def reset(self):
         ob = self.env.reset()
         for _ in range(self.k):
             self.frames.append(ob)
         return self._get_ob()
-
+    
     def step(self, action):
         ob, reward, done, info = self.env.step(action)
         self.frames.append(ob)
         return self._get_ob(), reward, done, info
-
+    
     def _get_ob(self):
         assert len(self.frames) == self.k
         return LazyFrames(list(self.frames))
-
 
 class LazyFrames:
     def __init__(self, frames):
@@ -208,13 +201,12 @@ class LazyFrames:
 
         You'd not believe how complex the previous solution was."""
         self._frames = frames
-
+    
     def __array__(self, dtype=None):
         out = np.concatenate(self._frames, axis=2)
         if dtype is not None:
             out = out.astype(dtype)
         return out
-
 
 def make_atari(env_id):
     env = gym.make(env_id)
@@ -223,32 +215,30 @@ def make_atari(env_id):
     env = MaxAndSkipEnv(env, skip=4)
     return env
 
-
 def wrap_deepmind(env, episode_life=True, clip_rewards=True, frame_stack=False):
     """Configure environment for DeepMind-style Atari.
     """
     if episode_life:
         env = EpisodicLifeEnv(env)
-
+    
     if 'FIRE' in env.unwrapped.get_action_meanings():
         env = FireResetEnv(env)
     env = WarpFrame(env)
-
+    
     if clip_rewards:
         env = ClipRewardEnv(env)
-
+    
     if frame_stack:
         env = FrameStack(env, 4)
-
+    
     return env
-
 
 class Monitor(gym.Wrapper):
     def __init__(self, env, rank=0):
         gym.Wrapper.__init__(self, env=env)
         self.rank = rank
-        self.rewards = []
-        self.total_reward = []
+        self.rewards = [ ]
+        self.total_reward = [ ]
         self.summaries_dict = {'reward': 0, 'episode_length': 0, 'total_reward': 0, 'total_episode_length': 0}
         env = self.env
         while True:
@@ -257,33 +247,33 @@ class Monitor(gym.Wrapper):
             if not hasattr(env, 'env'):
                 break
             env = env.env
-
+    
     def reset(self):
-        self.summaries_dict['reward'] = -1
-        self.summaries_dict['episode_length'] = -1
-        self.summaries_dict['total_reward'] = -1
-        self.summaries_dict['total_episode_length'] = -1
-        self.rewards = []
+        self.summaries_dict[ 'reward' ] = -1
+        self.summaries_dict[ 'episode_length' ] = -1
+        self.summaries_dict[ 'total_reward' ] = -1
+        self.summaries_dict[ 'total_episode_length' ] = -1
+        self.rewards = [ ]
         env = self.env
         if self.episodic_env.was_real_done:
-            self.summaries_dict['total_reward'] = -1
-            self.summaries_dict['total_episode_length'] = -1
-            self.total_reward = []
+            self.summaries_dict[ 'total_reward' ] = -1
+            self.summaries_dict[ 'total_episode_length' ] = -1
+            self.total_reward = [ ]
         return self.env.reset()
-
+    
     def step(self, action):
         observation, reward, done, info = self.env.step(action)
         self.rewards.append(reward)
         self.total_reward.append(reward)
         if done:
             # print("Done! R = %s, N = %s" % (sum(self.rewards), len(self.rewards)))
-            self.summaries_dict['reward'] = sum(self.rewards)
-            self.summaries_dict['episode_length'] = len(self.rewards)
-
+            self.summaries_dict[ 'reward' ] = sum(self.rewards)
+            self.summaries_dict[ 'episode_length' ] = len(self.rewards)
+            
             if self.episodic_env.was_real_done:
-                self.summaries_dict['total_reward'] = sum(self.total_reward)
-                self.summaries_dict['total_episode_length'] = len(self.total_reward)
-        info = self.summaries_dict.copy() # otherwise it will be overwritten
+                self.summaries_dict[ 'total_reward' ] = sum(self.total_reward)
+                self.summaries_dict[ 'total_episode_length' ] = len(self.total_reward)
+        info = self.summaries_dict.copy()  # otherwise it will be overwritten
         # if done:
         #     print("info:", info)
         return observation, reward, done, info

@@ -8,12 +8,13 @@
 
 import numpy as np
 
-X = []
+X = [ ]
 
 for line in open('../linear_regression_class/data_2d.csv'):
-  row = line.split(',')
-  sample = map(float, row)
-  X.append(sample)
+    row = line.split(',')
+    sample = map(float, row)
+    X.append(sample)
 
 X = np.array(X)
-print X
+print
+X

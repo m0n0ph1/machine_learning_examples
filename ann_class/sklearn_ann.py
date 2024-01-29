@@ -3,18 +3,17 @@
 # the notes for this class can be found at: 
 # https://deeplearningcourses.com/c/data-science-deep-learning-in-python
 # https://www.udemy.com/data-science-deep-learning-in-python
-from __future__ import print_function, division
-from builtins import range
+from __future__ import division, print_function
+
+import sys
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-
-import sys
 sys.path.append('../ann_logistic_extra')
 from process import get_data
 
 from sklearn.neural_network import MLPClassifier
-from sklearn.utils import shuffle
 
 # get the data
 Xtrain, Ytrain, Xtest, Ytest = get_data()

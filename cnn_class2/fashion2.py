@@ -1,27 +1,25 @@
 # https://deeplearningcourses.com/c/advanced-computer-vision
 # https://www.udemy.com/advanced-computer-vision
 
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
-
-from keras.models import Sequential, Model
-from keras.layers import Dense, Activation, Conv2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, Input
+from __future__ import division, print_function
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
+from keras.layers import Activation, BatchNormalization, Conv2D, Dense, Dropout, Flatten, Input, MaxPooling2D
+from keras.models import Model
+
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 
 # helper
 def y2indicator(Y):
-  N = len(Y)
-  K = len(set(Y))
-  I = np.zeros((N, K))
-  I[np.arange(N), Y] = 1
-  return I
-
+    N = len(Y)
+    K = len(set(Y))
+    I = np.zeros((N, K))
+    I[ np.arange(N), Y ] = 1
+    return I
 
 # get the data
 # https://www.kaggle.com/zalando-research/fashionmnist
@@ -29,8 +27,8 @@ data = pd.read_csv('../large_files/fashionmnist/fashion-mnist_train.csv')
 data = data.values
 np.random.shuffle(data)
 
-X = data[:, 1:].reshape(-1, 28, 28, 1) / 255.0
-Y = data[:, 0].astype(np.int32)
+X = data[ :, 1: ].reshape(-1, 28, 28, 1) / 255.0
+Y = data[ :, 0 ].astype(np.int32)
 
 # get shapes
 # N = len(Y)
@@ -41,9 +39,6 @@ K = len(set(Y))
 # where we can just pass in the integer labels directly
 # just like Tensorflow / Theano
 Y = y2indicator(Y)
-
-
-
 
 # make the CNN
 i = Input(shape=(28, 28, 1))
@@ -66,14 +61,13 @@ x = Activation('softmax')(x)
 
 model = Model(inputs=i, outputs=x)
 
-
 # list of losses: https://keras.io/losses/
 # list of optimizers: https://keras.io/optimizers/
 # list of metrics: https://keras.io/metrics/
 model.compile(
-  loss='categorical_crossentropy',
-  optimizer='adam',
-  metrics=['accuracy']
+    loss='categorical_crossentropy',
+    optimizer='adam',
+    metrics=[ 'accuracy' ]
 )
 
 # note: multiple ways to choose a backend
@@ -90,15 +84,13 @@ print("Returned:", r)
 print(r.history.keys())
 
 # plot some data
-plt.plot(r.history['loss'], label='loss')
-plt.plot(r.history['val_loss'], label='val_loss')
+plt.plot(r.history[ 'loss' ], label='loss')
+plt.plot(r.history[ 'val_loss' ], label='val_loss')
 plt.legend()
 plt.show()
 
 # accuracies
-plt.plot(r.history['accuracy'], label='acc')
-plt.plot(r.history['val_accuracy'], label='val_acc')
+plt.plot(r.history[ 'accuracy' ], label='acc')
+plt.plot(r.history[ 'val_accuracy' ], label='val_acc')
 plt.legend()
 plt.show()
-
-

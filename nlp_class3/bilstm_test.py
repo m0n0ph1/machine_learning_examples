@@ -1,30 +1,27 @@
 # https://deeplearningcourses.com/c/deep-learning-advanced-nlp
-from __future__ import print_function, division
-from builtins import range, input
+from __future__ import division, print_function
+
+import numpy as np
+from keras.layers import Bidirectional, Input, LSTM
+from keras.models import Model
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-from keras.models import Model
-from keras.layers import Input, LSTM, GRU, Bidirectional
-import numpy as np
-import matplotlib.pyplot as plt
-
 try:
-  import keras.backend as K
-  if len(K.tensorflow_backend._get_available_gpus()) > 0:
-    from keras.layers import CuDNNLSTM as LSTM
-    from keras.layers import CuDNNGRU as GRU
+    import keras.backend as K
+    
+    if len(K.tensorflow_backend._get_available_gpus()) > 0:
+        from keras.layers import CuDNNLSTM as LSTM
+        from keras.layers import CuDNNGRU as GRU
 except:
-  pass
-
+    pass
 
 T = 8
 D = 2
 M = 3
 
-
 X = np.random.randn(1, T, D)
-
 
 input_ = Input(shape=(T, D))
 # rnn = Bidirectional(LSTM(M, return_state=True, return_sequences=True))

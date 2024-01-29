@@ -1,18 +1,15 @@
 # https://deeplearningcourses.com/c/deep-learning-prerequisites-the-numpy-stack-in-python
 # https://www.udemy.com/deep-learning-prerequisites-the-numpy-stack-in-python
 
-from __future__ import print_function, division
-from future.utils import iteritems
-from builtins import range, input
-# Note: you may need to update your version of future
-# sudo pip install -U future
+from __future__ import division, print_function
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-
 
 from ex8 import get_spiral
+
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 # get the data
 X, Y = get_spiral()
@@ -24,5 +21,5 @@ X, Y = get_spiral()
 data = np.concatenate((X, np.expand_dims(Y, 1)), axis=1)
 
 df = pd.DataFrame(data)
-df.columns = ['x1', 'x2', 'y']
+df.columns = [ 'x1', 'x2', 'y' ]
 df.to_csv('mydata.csv', index=False)

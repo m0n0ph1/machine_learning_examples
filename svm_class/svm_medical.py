@@ -1,15 +1,14 @@
 # https://deeplearningcourses.com/c/support-vector-machines-in-python
 # https://www.udemy.com/support-vector-machines-in-python
-from __future__ import print_function, division
-from future.utils import iteritems
-from builtins import range, input
+from __future__ import division, print_function
+
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
-
-from sklearn.svm import SVC
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_breast_cancer
-from sklearn.preprocessing import StandardScaler
 
 # load the data
 data = load_breast_cancer()

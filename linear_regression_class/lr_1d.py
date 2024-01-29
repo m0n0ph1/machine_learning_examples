@@ -4,18 +4,17 @@
 # https://deeplearningcourses.com/c/data-science-linear-regression-in-python
 # https://www.udemy.com/data-science-linear-regression-in-python
 
-from __future__ import print_function, division
-from builtins import range
+from __future__ import division, print_function
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-
-import numpy as np
-import matplotlib.pyplot as plt
-
 # load the data
-X = []
-Y = []
+X = [ ]
+Y = [ ]
 for line in open('data_1d.csv'):
     x, y = line.split(',')
     X.append(float(x))
@@ -25,11 +24,9 @@ for line in open('data_1d.csv'):
 X = np.array(X)
 Y = np.array(Y)
 
-
 # let's plot the data to see what it looks like
 plt.scatter(X, Y)
 plt.show()
-
 
 # apply the equations we learned to calculate a and b
 
@@ -37,11 +34,11 @@ plt.show()
 # note: this could be more efficient if
 #       we only computed the sums and means once
 denominator = X.dot(X) - X.mean() * X.sum()
-a = ( X.dot(Y) - Y.mean()*X.sum() ) / denominator
-b = ( Y.mean() * X.dot(X) - X.mean() * X.dot(Y) ) / denominator
+a = (X.dot(Y) - Y.mean() * X.sum()) / denominator
+b = (Y.mean() * X.dot(X) - X.mean() * X.dot(Y)) / denominator
 
 # let's calculate the predicted Y
-Yhat = a*X + b
+Yhat = a * X + b
 
 # let's plot everything together to make sure it worked
 plt.scatter(X, Y)

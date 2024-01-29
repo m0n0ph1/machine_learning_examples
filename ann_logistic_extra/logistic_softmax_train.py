@@ -1,24 +1,25 @@
-from __future__ import print_function, division
+from __future__ import division, print_function
+
 from builtins import range
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from process import get_data
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-from sklearn.utils import shuffle
-from process import get_data
 
 def y2indicator(y, K):
     N = len(y)
     ind = np.zeros((N, K))
     for i in range(N):
-        ind[i, y[i]] = 1
+        ind[ i, y[ i ] ] = 1
     return ind
 
 Xtrain, Ytrain, Xtest, Ytest = get_data()
-D = Xtrain.shape[1]
+D = Xtrain.shape[ 1 ]
 K = len(set(Ytrain) | set(Ytest))
 
 # convert to indicator
@@ -47,23 +48,22 @@ def classification_rate(Y, P):
 def cross_entropy(Y, pY):
     return -np.sum(Y * np.log(pY)) / len(Y)
 
-
 # train loop
-train_costs = []
-test_costs = []
+train_costs = [ ]
+test_costs = [ ]
 learning_rate = 0.001
 for i in range(10000):
     pYtrain = forward(Xtrain, W, b)
     pYtest = forward(Xtest, W, b)
-
+    
     ctrain = cross_entropy(Ytrain_ind, pYtrain)
     ctest = cross_entropy(Ytest_ind, pYtest)
     train_costs.append(ctrain)
     test_costs.append(ctest)
-
+    
     # gradient descent
-    W -= learning_rate*Xtrain.T.dot(pYtrain - Ytrain_ind)
-    b -= learning_rate*(pYtrain - Ytrain_ind).sum(axis=0)
+    W -= learning_rate * Xtrain.T.dot(pYtrain - Ytrain_ind)
+    b -= learning_rate * (pYtrain - Ytrain_ind).sum(axis=0)
     if i % 1000 == 0:
         print(i, ctrain, ctest)
 

@@ -1,18 +1,18 @@
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
-
+from __future__ import division, print_function
 
 import numpy as np
+
 from process import get_binary_data
+
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 X, Y, _, _ = get_binary_data()
 
 # randomly initialize weights
-D = X.shape[1]
+D = X.shape[ 1 ]
 W = np.random.randn(D)
-b = 0 # bias term
+b = 0  # bias term
 
 # make predictions
 def sigmoid(a):

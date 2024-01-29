@@ -1,15 +1,17 @@
 # https://deeplearningcourses.com/c/deep-learning-convolutional-neural-networks-theano-tensorflow
 # https://udemy.com/deep-learning-convolutional-neural-networks-theano-tensorflow
-from __future__ import print_function, division
+from __future__ import division, print_function
+
 from builtins import range
+
+import matplotlib.image as mpimg
+# from scipy.signal import convolve2d
+import matplotlib.pyplot as plt
+import numpy as np
+
 # Note: you may need to update your version of future
 # sudo pip install -U future
 
-import numpy as np
-# from scipy.signal import convolve2d
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from datetime import datetime
 
 # def convolve2d(X, W):
 #     t0 = datetime.now()
@@ -43,9 +45,9 @@ def convolve2d(X, W):
     Y = np.zeros((n1 + m1 - 1, n2 + m2 - 1))
     for i in range(n1):
         for j in range(n2):
-            Y[i:i+m1,j:j+m2] += X[i,j]*W
-    ret = Y[m1//2:-m1//2+1,m2//2:-m2//2+1]
-    assert(ret.shape == X.shape)
+            Y[ i:i + m1, j:j + m2 ] += X[ i, j ] * W
+    ret = Y[ m1 // 2:-m1 // 2 + 1, m2 // 2:-m2 // 2 + 1 ]
+    assert (ret.shape == X.shape)
     return ret
 
 # smaller than input
@@ -75,8 +77,8 @@ plt.show()
 W = np.zeros((20, 20))
 for i in range(20):
     for j in range(20):
-        dist = (i - 9.5)**2 + (j - 9.5)**2
-        W[i, j] = np.exp(-dist / 50.)
+        dist = (i - 9.5) ** 2 + (j - 9.5) ** 2
+        W[ i, j ] = np.exp(-dist / 50.)
 
 # let's see what the filter looks like
 plt.imshow(W, cmap='gray')
@@ -95,9 +97,6 @@ print(out.shape)
 out = np.zeros(img.shape)
 W /= W.sum()
 for i in range(3):
-    out[:,:,i] = convolve2d(img[:,:,i], W)
+    out[ :, :, i ] = convolve2d(img[ :, :, i ], W)
 plt.imshow(out)
 plt.show()
-
-
-

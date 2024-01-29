@@ -1,15 +1,14 @@
-from __future__ import print_function, division
-from builtins import range
-# Note: you may need to update your version of future
-# sudo pip install -U future
+from __future__ import division, print_function
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from keras.layers import Dense, Dropout, Input
+from keras.models import Model
 
 from util import getKaggleMNIST
-from keras.models import Model
-from keras.layers import Dense, Activation, Input, Dropout
 
+# Note: you may need to update your version of future
+# sudo pip install -U future
 
 # get the data
 Xtrain, Ytrain, Xtest, Ytest = getKaggleMNIST()
@@ -17,7 +16,6 @@ Xtrain, Ytrain, Xtest, Ytest = getKaggleMNIST()
 # get shapes
 N, D = Xtrain.shape
 K = len(set(Ytrain))
-
 
 # ANN with layers [784] -> [500] -> [300] -> [10]
 i = Input(shape=(D,))
@@ -31,14 +29,13 @@ x = Dense(K, activation='softmax')(x)
 # instantiate the model object
 model = Model(inputs=i, outputs=x)
 
-
 # list of losses: https://keras.io/losses/
 # list of optimizers: https://keras.io/optimizers/
 # list of metrics: https://keras.io/metrics/
 model.compile(
-  loss='sparse_categorical_crossentropy',
-  optimizer='adam',
-  metrics=['accuracy']
+    loss='sparse_categorical_crossentropy',
+    optimizer='adam',
+    metrics=[ 'accuracy' ]
 )
 
 # note: multiple ways to choose a backend
@@ -55,20 +52,18 @@ print("Returned:", r)
 print(r.history.keys())
 
 # plot some data
-plt.plot(r.history['loss'], label='loss')
-plt.plot(r.history['val_loss'], label='val_loss')
+plt.plot(r.history[ 'loss' ], label='loss')
+plt.plot(r.history[ 'val_loss' ], label='val_loss')
 plt.legend()
 plt.show()
 
 # accuracies
-plt.plot(r.history['acc'], label='acc')
-plt.plot(r.history['val_acc'], label='val_acc')
+plt.plot(r.history[ 'acc' ], label='acc')
+plt.plot(r.history[ 'val_acc' ], label='val_acc')
 plt.legend()
 plt.show()
 
-
 # make predictions and evaluate
-probs = model.predict(Xtest) # N x K matrix of probabilities
+probs = model.predict(Xtest)  # N x K matrix of probabilities
 Ptest = np.argmax(probs, axis=1)
 print("Validation acc:", np.mean(Ptest == Ytest))
-
